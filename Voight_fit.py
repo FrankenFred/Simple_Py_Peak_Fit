@@ -3,7 +3,7 @@
 
 # # Initialize
 
-# In[54]:
+# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'notebook')
@@ -14,9 +14,8 @@ from scipy.optimize import curve_fit
 
 
 # # Functions
-# $ \sigma y = x $
 
-# In[55]:
+# In[5]:
 
 
 def p_to_Conc(p, T):
@@ -54,7 +53,7 @@ def fit_func(x, p_self, offset, v1, v2, v3, v4):
 
 # # Const and Params
 
-# In[56]:
+# In[6]:
 
 
 """ Constants """
@@ -95,7 +94,7 @@ S_S1L4 = 5.297e-22 # Line strength, (molecule-1 cm2)/(cm-1)
 
 # ## Import data and plot with initial guess
 
-# In[57]:
+# In[7]:
 
 
 samp_file = r"C:\Users\winiberg\Desktop\Abs_Spec_Test.txt"
@@ -107,10 +106,11 @@ x_data = x_data.flatten()
 samp_data = samp_data.flatten()
 
 plt.plot(x_data, samp_data, ls=':', c='k', label='Sample')
-plt.plot(x_data, V_func(x_data,2.5,25.621,M_S1,g_air_S1L1,g_self_S1L1,S_S1L1,v_S1L1), c='r', label='Voigt1')
-plt.plot(x_data, V_func(x_data,2.5,32.157,M_S1,g_air_S1L2,g_self_S1L2,S_S1L2,v_S1L2), c='b', label='Voigt2')
-plt.plot(x_data, V_func(x_data,2.5,37.656,M_S1,g_air_S1L3,g_self_S1L3,S_S1L3,v_S1L3), c='g', label='Voigt3')
-plt.plot(x_data, V_func(x_data,2.5,39.79,M_S1,g_air_S1L4,g_self_S1L4,S_S1L4,v_S1L4), c='y', label='Voigt4')
+plt.plot(x_data, fit_func(x_data,2.5,0.02,25.621,32.157,37.656,39.79), c='r', label='Voigt1')
+#plt.plot(x_data, V_func(x_data,2.5,25.621,M_S1,g_air_S1L1,g_self_S1L1,S_S1L1,v_S1L1), c='r', label='Voigt1')
+#plt.plot(x_data, V_func(x_data,2.5,32.157,M_S1,g_air_S1L2,g_self_S1L2,S_S1L2,v_S1L2), c='b', label='Voigt2')
+#plt.plot(x_data, V_func(x_data,2.5,37.656,M_S1,g_air_S1L3,g_self_S1L3,S_S1L3,v_S1L3), c='g', label='Voigt3')
+#plt.plot(x_data, V_func(x_data,2.5,39.79,M_S1,g_air_S1L4,g_self_S1L4,S_S1L4,v_S1L4), c='y', label='Voigt4')
 plt.xlabel('Current / mA')
 plt.ylabel('Abs')
 plt.legend()
@@ -119,7 +119,7 @@ plt.show()
 
 # # Fit Data
 
-# In[58]:
+# In[17]:
 
 
 get_ipython().run_line_magic('matplotlib', 'notebook')
@@ -130,10 +130,13 @@ Conc1 = popt[0]
 Offset = popt[1]
 print(p_to_Conc(Conc1,Temp))
 
-plt.plot(x_data, samp_data, ls=':', c='k', label='Sample')
-plt.plot(x_data, fit_func(x_data, *popt), c='r', label='Fit')
-plt.xlabel('Current / mA')
-plt.ylabel('Abs')
-plt.legend()
+f, axarr = plt.subplots(2, sharex=True)
+axarr[0].plot(x_data, samp_data, ls=':', c='k', label='Sample')
+axarr[0].plot(x_data, fit_func(x_data, *popt), c='r', label='Fit')
+axarr[1].plot(x_data, (samp_data-fit_func(x_data, *popt)), c='g', label='Residual')
+for ax in axarr.flat:
+    ax.set(xlabel='Current / mA', ylabel='Abs')
+    ax.label_outer()
+    ax.legend(loc="upper right")
 plt.show()
 
